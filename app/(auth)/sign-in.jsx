@@ -7,9 +7,11 @@ import { images } from "../../constants";
 import Logo from "../../components/logo";
 import CustomButtom from "../../components/custom-botton";
 import FormField from "../../components/form-field";
-import { signIn } from "../../lib/appwrite";
+import { getCurrentUser, signIn } from "../../lib/appwrite";
+import { useGlobalContext } from "../../contexts/global-provider";
 
 const SignIn = () => {
+  const { setUser, setIsLoggedIn } = useGlobalContext();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     email: "",
@@ -23,8 +25,11 @@ const SignIn = () => {
     setLoading(true);
 
     try {
-      const user = await signIn(form.email, form.password);
-      // TODO: set to context
+      await signIn(form.email.trim(), form.password.trim());
+      const user = await getCurrentUser();
+      setUser(user);
+      setIsLoggedIn(true);
+
       router.push("/home");
     } catch (error) {
       Alert.alert(error.message);

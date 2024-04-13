@@ -7,9 +7,11 @@ import { images } from "../../constants";
 import Logo from "../../components/logo";
 import CustomButtom from "../../components/custom-botton";
 import FormField from "../../components/form-field";
-import { createUser } from "../../lib/appwrite";
+import { createUser, getCurrentUser } from "../../lib/appwrite";
+import { useGlobalContext } from "../../contexts/global-provider";
 
 const SignUp = () => {
+  const { setUser, setIsLoggedIn } = useGlobalContext();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     username: "",
@@ -29,7 +31,8 @@ const SignUp = () => {
         password: form.password,
         username: form.username,
       });
-      // TODO: set to context
+      setUser(user);
+      setIsLoggedIn(true);
       router.push("/home");
     } catch (error) {
       Alert.alert(error.message);
@@ -62,7 +65,12 @@ const SignUp = () => {
             value={form.password}
             handleChangeText={(password) => setForm({ ...form, password })}
           />
-          <CustomButtom onPress={submit} title="Sign up" className="mt-7" />
+          <CustomButtom
+            isLoading={loading}
+            onPress={submit}
+            title="Sign up"
+            className="mt-7"
+          />
           <View className="justify-center pt-5 flex-row gap-2">
             <Text className="text-sm text-gray-100 font-pregular">
               Already have an account?
